@@ -1,0 +1,23 @@
+Plain text sample
+
+The grammar has almost nothing to say about plain text, which is the point:
+it exists so an unrecognised file still gets a language, indentation, and
+soft wrap rather than nothing at all.
+
+The three things it does scope are bullet points, one per marker:
+
+• a strong bullet
+• another strong bullet
+
+· a light bullet
+· another light bullet
+
+* a star bullet
+* another star bullet
+
+  Indented text is its own paragraph. Leading whitespace is scoped
+  separately from the paragraph body, which is what lets a wrapped line
+  keep its indent.
+
+Everything else — URLs like https://example.com, numbers like 1234, and
+punctuation like {}[]()<> — is left unscoped on purpose.
