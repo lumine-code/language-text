@@ -14,6 +14,11 @@
   },
   "repository": "https://github.com/lumine-code/language-text",
   "license": "MIT",
+  "files": [
+    "grammars",
+    "snippets",
+    "spec"
+  ],
   "bugs": {
     "url": "https://github.com/lumine-code/language-text/issues"
   },
