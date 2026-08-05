@@ -9,7 +9,7 @@
     "prose"
   ],
   "engines": {
-    "lumine": "*",
+    "lumine": "^1.0.0",
     "node": "*"
   },
   "repository": "https://github.com/lumine-code/language-text",
