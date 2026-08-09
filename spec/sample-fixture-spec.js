@@ -7,11 +7,11 @@ const path = require("path");
 
 describe("Plain Text sample fixtures", () => {
   beforeEach(async () => {
-    await atom.packages.activatePackage("language-text");
+    await lumine.packages.activatePackage("language-text");
   });
 
   it("tokenizes sample.txt", async () => {
-    const editor = await atom.workspace.open(path.join(__dirname, "fixtures", "sample.txt"));
+    const editor = await lumine.workspace.open(path.join(__dirname, "fixtures", "sample.txt"));
 
     expect(editor.getGrammar().scopeName).toBe("text.plain");
 

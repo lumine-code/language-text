@@ -2,9 +2,9 @@ describe("Plain Text grammar", () => {
   let grammar = null;
 
   beforeEach(() => {
-    waitsForPromise(() => atom.packages.activatePackage("language-text"));
+    waitsForPromise(() => lumine.packages.activatePackage("language-text"));
 
-    runs(() => (grammar = atom.grammars.grammarForScopeName("text.plain")));
+    runs(() => (grammar = lumine.grammars.grammarForScopeName("text.plain")));
   });
 
   it("parses the grammar", () => {
