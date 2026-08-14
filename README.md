@@ -10,7 +10,7 @@ Plain text support.
 
 ## Installation
 
-To install `language-text` search for _language-text_ in the Install pane of the Lumine settings or run `lumine --install lumine-code/language-text`.
+To install `language-text` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/language-text`.
 
 ## Contributing
 
