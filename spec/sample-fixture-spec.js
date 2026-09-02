@@ -1,36 +1,28 @@
 const path = require("path");
 
-// The fixture beside this file is a plain sample of the language — the file to
-// open when you want to look at the highlighting rather than assert on it. This
-// spec is only what stops the sample quietly rotting: the grammar still claims
-// it, and it still tokenizes.
-
-describe("Plain Text sample fixtures", () => {
+describe("Plain Text sample fixture", () => {
   beforeEach(async () => {
+    await lumine.packages.activatePackage("language-todo");
+    await lumine.packages.activatePackage("language-log");
     await lumine.packages.activatePackage("language-text");
   });
 
-  it("tokenizes sample.txt", async () => {
+  it("parses prose and hosts TODO injections", async () => {
     const editor = await lumine.workspace.open(path.join(__dirname, "fixtures", "sample.txt"));
+    const languageMode = editor.getBuffer().getLanguageMode();
+    await languageMode.ready;
+    await languageMode.atTransactionEnd();
 
     expect(editor.getGrammar().scopeName).toBe("text.plain");
-
-    // Read the grammar rather than the editor: a TextMate language mode
-    // tokenizes lazily in the background, so scanning rows through the editor
-    // reports whatever happened to be done by then — green on a fast machine
-    // and red on a slow one. `tokenizeLines` is synchronous and complete.
-    const text = require("fs").readFileSync(path.join(__dirname, "fixtures", "sample.txt"), "utf8");
-    const scopes = new Set();
-    for (const tokens of editor.getGrammar().tokenizeLines(text)) {
-      for (const token of tokens) {
-        for (const name of token.scopes) scopes.add(name);
-      }
-    }
-
-    // Every token carries the root scope, so a sample the grammar matched
-    // nothing in still tokenizes — it just comes back as one flat run of
-    // "text.plain" and nothing else. That is what this rules out.
-    scopes.delete("text.plain");
-    expect(scopes.size).toBeGreaterThan(0);
+    expect(languageMode.tree.rootNode.hasError).toBe(false);
+    await conditionPromise(() =>
+      editor
+        .scopeDescriptorForBufferPosition([4, 0])
+        .getScopesArray()
+        .includes("storage.type.class.todo"),
+    );
+    expect(editor.scopeDescriptorForBufferPosition([4, 0]).getScopesArray()).toContain(
+      "storage.type.class.todo",
+    );
   });
 });

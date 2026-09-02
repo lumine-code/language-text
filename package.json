@@ -12,10 +12,13 @@
     "lumine": "^1.0.0",
     "node": ">=24"
   },
+  "specPackages": [
+    "language-log",
+    "language-todo"
+  ],
   "repository": "https://github.com/lumine-code/language-text",
   "license": "MIT",
   "files": [
-    "grammars",
     "snippets",
     "spec"
   ],

@@ -4,8 +4,8 @@ Plain text support.
 
 ## Features
 
-- **Grammars**: provides TextMate grammars derived from [atom/language-text](https://github.com/atom/language-text).
-- **Syntax highlighting**: grammar coverage for plain text files.
+- **Grammars**: uses the lightweight Tree-sitter plain-text grammar provided by the central `language-log` package.
+- **Syntax highlighting**: `language-log` supplies paragraph scopes and TODO injection points for plain text.
 - **Snippets**: shortcuts for common plain text constructs.
 
 ## Installation
