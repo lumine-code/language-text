@@ -3,7 +3,6 @@ const path = require("path");
 describe("Plain Text sample fixture", () => {
   beforeEach(async () => {
     await lumine.packages.activatePackage("language-todo");
-    await lumine.packages.activatePackage("language-log");
     await lumine.packages.activatePackage("language-text");
   });
 

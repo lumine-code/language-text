@@ -2,23 +2,26 @@
   "name": "language-text",
   "author": "lumine-code",
   "version": "1.0.0",
+  "main": "lib/main",
   "description": "Plain text support.",
   "keywords": [
     "txt",
     "plaintext",
-    "prose"
+    "prose",
+    "tree-sitter"
   ],
   "engines": {
     "lumine": "^1.0.0",
     "node": ">=24"
   },
   "specPackages": [
-    "language-log",
     "language-todo"
   ],
   "repository": "https://github.com/lumine-code/language-text",
   "license": "MIT",
   "files": [
+    "grammars",
+    "lib",
     "snippets",
     "spec"
   ],
@@ -30,6 +33,13 @@
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
+  },
+  "consumedServices": {
+    "todo.injection": {
+      "versions": {
+        "^1.0.0": "consumeTodoInjection"
+      }
+    }
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

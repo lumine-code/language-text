@@ -4,13 +4,18 @@ Plain text support.
 
 ## Features
 
-- **Grammars**: uses the lightweight Tree-sitter plain-text grammar provided by the central `language-log` package.
-- **Syntax highlighting**: `language-log` supplies paragraph scopes and TODO injection points for plain text.
+- **Grammars**: provides a lightweight Tree-sitter grammar for plain text.
+- **Paragraphs**: groups consecutive nonblank lines without interpreting prose as log syntax.
+- **Syntax highlighting**: supplies paragraph scopes and TODO injection points for plain text.
 - **Snippets**: shortcuts for common plain text constructs.
 
 ## Installation
 
 To install `language-text` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/language-text`.
+
+## Services
+
+- `todo.injection`: consumed to highlight task annotations in plain text.
 
 ## Contributing
 
