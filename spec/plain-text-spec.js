@@ -22,34 +22,41 @@ describe("Plain Text grammar", () => {
     editor.setText(text);
     await editor.languageMode.ready;
     await editor.languageMode.atTransactionEnd();
-    expect(editor.languageMode.tree.rootNode.hasError).toBe(false);
+    expect((await editor.getSyntaxDiagnostics()).hasError).toBe(false);
     return editor;
+  }
+
+  function expectDocumentShape(editor, lineCounts) {
+    const root = editor.getSyntaxNodeAtBufferPosition([0, 0], (node) => node.parent == null);
+    expect(root.type).toBe("document");
+    expect(root.namedChildren.map((node) => node.type)).toEqual(lineCounts.map(() => "paragraph"));
+    expect(
+      root.namedChildren.map((paragraph) => paragraph.namedChildren.map((node) => node.type)),
+    ).toEqual(lineCounts.map((count) => Array(count).fill("line")));
   }
 
   it("builds paragraph and line nodes for plain text", async () => {
     const editor = await parse("first\nsecond\n\nthird\n\t \nfourth");
-    expect(editor.languageMode.tree.rootNode.toString()).toBe(
-      "(document (paragraph (line) (line)) (paragraph (line)) (paragraph (line)))",
-    );
+    expectDocumentShape(editor, [2, 1, 1]);
   });
 
   it("accepts empty text, whitespace, Unicode, punctuation, and every line ending", async () => {
     const cases = [
-      ["", "(document)"],
-      [" \t ", "(document)"],
-      ["Zażółć gęślą jaźń 🙂 — []{}() / \\ \" ' …", "(document (paragraph (line)))"],
-      ["first\r\nsecond\r\n\r\nthird\r\n", null],
-      ["first\rsecond\r\rthird\r", null],
+      ["", []],
+      [" \t ", []],
+      ["Zażółć gęślą jaźń 🙂 — []{}() / \\ \" ' …", [1]],
+      ["first\r\nsecond\r\n\r\nthird\r\n", [2, 1]],
+      ["first\rsecond\r\rthird\r", [2, 1]],
     ];
-    for (const [text, expectedTree] of cases) {
+    for (const [text, lineCounts] of cases) {
       const editor = await parse(text);
-      if (expectedTree) expect(editor.languageMode.tree.rootNode.toString()).toBe(expectedTree);
+      expectDocumentShape(editor, lineCounts);
     }
   });
 
   it("parses a very long line without errors", async () => {
     const editor = await parse("plain text ".repeat(100000));
-    expect(editor.languageMode.tree.rootNode.toString()).toBe("(document (paragraph (line)))");
+    expectDocumentShape(editor, [1]);
   });
 
   it("preserves the standard plain-text paragraph scope", async () => {
