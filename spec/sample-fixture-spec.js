@@ -13,7 +13,9 @@ describe("Plain Text sample fixture", () => {
     await languageMode.atTransactionEnd();
 
     expect(editor.getGrammar().scopeName).toBe("text.plain");
-    expect((await editor.getSyntaxDiagnostics()).hasError).toBe(false);
+    expect(
+      editor.getSyntaxNodeAtBufferPosition([0, 0], (node) => node.type === "document").hasError,
+    ).toBe(false);
     await conditionPromise(() =>
       editor
         .scopeDescriptorForBufferPosition([4, 0])

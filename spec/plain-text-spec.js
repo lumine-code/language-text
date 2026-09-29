@@ -22,7 +22,9 @@ describe("Plain Text grammar", () => {
     editor.setText(text);
     await editor.languageMode.ready;
     await editor.languageMode.atTransactionEnd();
-    expect((await editor.getSyntaxDiagnostics()).hasError).toBe(false);
+    expect(
+      editor.getSyntaxNodeAtBufferPosition([0, 0], (node) => node.type === "document").hasError,
+    ).toBe(false);
     return editor;
   }
 
@@ -57,6 +59,23 @@ describe("Plain Text grammar", () => {
   it("parses a very long line without errors", async () => {
     const editor = await parse("plain text ".repeat(100000));
     expectDocumentShape(editor, [1]);
+  });
+
+  it("preserves paragraph nodes and scopes when appending past hidden line groups", async () => {
+    const editor = await parse("paragraph line\n".repeat(129));
+    expectDocumentShape(editor, [129]);
+
+    editor.setCursorBufferPosition(editor.getBuffer().getEndPosition());
+    editor.insertText("last line");
+    await editor.languageMode.atTransactionEnd();
+
+    expectDocumentShape(editor, [130]);
+    expect(editor.scopeDescriptorForBufferPosition([129, 0]).getScopesArray()).toContain(
+      "meta.paragraph.text",
+    );
+    expect(
+      editor.getSyntaxNodeAtBufferPosition([0, 0], (node) => node.type === "document").hasError,
+    ).toBe(false);
   });
 
   it("preserves the standard plain-text paragraph scope", async () => {

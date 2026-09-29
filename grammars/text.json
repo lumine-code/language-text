@@ -6,7 +6,7 @@
   "injectionNames": ["text", "plain", "plaintext"],
   "fileTypes": ["txt"],
   "treeSitter": {
-    "parserSource": "github:lumine-code/tree-sitter-plain-text#a2bff6d1c4c9f1fa94cd6387be7ddf57d7500010",
+    "parserSource": "github:lumine-code/tree-sitter-plain-text#b03e751232c883efc3edefa5214554f700b1e168",
     "wasmBuildTool": "tree-sitter-cli#v0.27.0",
     "grammar": "plain-text.wasm",
     "highlightsQuery": "text-highlights.scm"
