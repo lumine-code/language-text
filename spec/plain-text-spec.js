@@ -86,6 +86,26 @@ describe("Plain Text grammar", () => {
     );
   });
 
+  it("preserves paragraph boundaries and scopes across hidden document groups", async () => {
+    const count = 129;
+    const editor = await parse("paragraph\n\n".repeat(count));
+    expectDocumentShape(editor, Array(count).fill(1));
+    for (const index of [0, 64, count - 1]) {
+      editor.getBuffer().setTextInRange(
+        [
+          [index * 2, 0],
+          [index * 2, 1],
+        ],
+        "P",
+      );
+      await editor.languageMode.atTransactionEnd();
+      expectDocumentShape(editor, Array(count).fill(1));
+      expect(editor.scopeDescriptorForBufferPosition([index * 2, 0]).getScopesArray()).toContain(
+        "meta.paragraph.text",
+      );
+    }
+  });
+
   it("hosts TODO injections only at word boundaries", async () => {
     const editor = await parse("TODO fix this\nxTODO\nTODOs\nsubTODO\n");
     await conditionPromise(() =>
