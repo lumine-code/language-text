@@ -29,7 +29,7 @@ describe("Plain Text grammar", () => {
   }
 
   function expectDocumentShape(editor, lineCounts) {
-    const root = editor.getSyntaxNodeAtBufferPosition([0, 0], (node) => node.parent == null);
+    const root = editor.languageMode.tree.rootNode;
     expect(root.type).toBe("document");
     expect(root.namedChildren.map((node) => node.type)).toEqual(lineCounts.map(() => "paragraph"));
     expect(

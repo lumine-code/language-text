@@ -9,6 +9,7 @@
     "parserSource": "github:lumine-code/tree-sitter-plain-text#8ff438fc2f0086bef5358ee8e0eec683ba5741d0",
     "wasmBuildTool": "tree-sitter-cli#v0.27.0",
     "grammar": "plain-text.wasm",
-    "highlightsQuery": "text-highlights.scm"
+    "highlightsQuery": "text-highlights.scm",
+    "injectionsQuery": "text-injections.scm"
   }
 }

@@ -13,10 +13,6 @@ Plain text support.
 
 To install `language-text` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/language-text`.
 
-## Services
-
-- `todo.injection`: consumed to highlight task annotations in plain text.
-
 ## Contributing
 
 Got ideas to make this package better, found a bug, or want to help add new features? Just drop your thoughts on GitHub. Any feedback is welcome!

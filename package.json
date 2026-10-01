@@ -2,7 +2,6 @@
   "name": "language-text",
   "author": "lumine-code",
   "version": "1.0.0",
-  "main": "lib/main",
   "description": "Plain text support.",
   "keywords": [
     "txt",
@@ -21,7 +20,6 @@
   "license": "MIT",
   "files": [
     "grammars",
-    "lib",
     "snippets",
     "spec"
   ],
@@ -33,13 +31,6 @@
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
-  },
-  "consumedServices": {
-    "todo.injection": {
-      "versions": {
-        "^1.0.0": "consumeTodoInjection"
-      }
-    }
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
