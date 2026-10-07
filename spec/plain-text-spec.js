@@ -29,11 +29,12 @@ describe("Plain Text grammar", () => {
   }
 
   function expectDocumentShape(editor, lineCounts) {
-    const root = editor.languageMode.tree.rootNode;
+    const root = editor.getSyntaxNodeAtBufferPosition([0, 0], (node) => !node.parent);
     expect(root.type).toBe("document");
-    expect(root.namedChildren.map((node) => node.type)).toEqual(lineCounts.map(() => "paragraph"));
+    const paragraphs = root.descendantsOfType("paragraph");
+    expect(paragraphs.map((node) => node.type)).toEqual(lineCounts.map(() => "paragraph"));
     expect(
-      root.namedChildren.map((paragraph) => paragraph.namedChildren.map((node) => node.type)),
+      paragraphs.map((paragraph) => paragraph.descendantsOfType("line").map((node) => node.type)),
     ).toEqual(lineCounts.map((count) => Array(count).fill("line")));
   }
 

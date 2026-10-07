@@ -14,7 +14,8 @@
     "node": ">=24"
   },
   "specPackages": [
-    "language-todo"
+    "language-todo",
+    "language-javascript"
   ],
   "repository": "https://github.com/lumine-code/language-text",
   "license": "MIT",
