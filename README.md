@@ -2,6 +2,8 @@
 
 Plain text support.
 
+Fork of [pulsar-edit/pulsar](https://github.com/pulsar-edit/pulsar) (`packages/language-text`).
+
 ## Features
 
 - **Grammars**: provides a lightweight Tree-sitter grammar for plain text.
