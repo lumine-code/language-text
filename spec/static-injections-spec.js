@@ -6,7 +6,7 @@ const packagePath = (name) => {
   return fs.existsSync(sibling) ? sibling : name;
 };
 
-describe("Plain Text static annotations", () => {
+describe("Plain Text without injections", () => {
   let editor;
 
   beforeEach(async () => {
@@ -16,16 +16,34 @@ describe("Plain Text static annotations", () => {
 
   afterEach(() => editor?.destroy());
 
-  it("creates layers only for complete lines containing annotation tokens", async () => {
+  it("keeps annotation markers and links plain with their grammars loaded", async () => {
+    await lumine.packages.activatePackage(packagePath("language-hyperlink"));
     editor = await lumine.workspace.open();
     editor.setGrammar(lumine.grammars.grammarForScopeName("text.plain"));
-    editor.setText("ordinary prose\nTODO finish this line\nordinary prose again\n");
-    await editor.languageMode.ready;
-    await editor.languageMode.atGrammarSettlement();
-    const layers = editor.languageMode.getAllInjectionLayers();
-    expect(layers.length).toBe(1);
-    expect(layers[0].getCurrentRanges().map((range) => editor.getTextInBufferRange(range))).toEqual(
-      ["TODO finish this line"],
+    editor.setText(
+      "ordinary prose\nTODO finish this line\nFIXME CHANGED XXX IDEA HACK NOTE REVIEW NB BUG QUESTION COMBAK TEMP DEBUG OPTIMIZE WARNING\nhttps://example.com\n",
     );
+    await editor.whenGrammarSettled();
+    expect(editor.languageMode.getAllInjectionLayers()).toEqual([]);
+    for (const row of [0, 1, 2, 3]) {
+      expect(editor.scopeDescriptorForBufferPosition([row, 0]).getScopesArray()).toEqual([
+        "text.plain",
+        "meta.paragraph.text",
+      ]);
+    }
+
+    editor.setTextInBufferRange(
+      [
+        [0, 0],
+        [0, 0],
+      ],
+      "TODO https://example.com\n",
+    );
+    await editor.whenGrammarSettled();
+    expect(editor.languageMode.getAllInjectionLayers()).toEqual([]);
+    expect(editor.scopeDescriptorForBufferPosition([0, 0]).getScopesArray()).toEqual([
+      "text.plain",
+      "meta.paragraph.text",
+    ]);
   });
 });

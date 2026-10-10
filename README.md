@@ -8,7 +8,7 @@ Fork of [pulsar-edit/pulsar](https://github.com/pulsar-edit/pulsar) (`packages/l
 
 - **Grammars**: provides a lightweight Tree-sitter grammar for plain text.
 - **Paragraphs**: groups consecutive nonblank lines without interpreting prose as log syntax.
-- **Syntax highlighting**: supplies paragraph scopes and TODO injection points for plain text.
+- **Syntax highlighting**: supplies paragraph scopes without injecting other languages.
 - **Snippets**: shortcuts for common plain text constructs.
 
 ## Installation

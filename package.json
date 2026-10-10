@@ -15,6 +15,7 @@
   },
   "specPackages": [
     "language-todo",
+    "language-hyperlink",
     "language-javascript"
   ],
   "repository": "https://github.com/lumine-code/language-text",

@@ -6,24 +6,20 @@ describe("Plain Text sample fixture", () => {
     await lumine.packages.activatePackage("language-text");
   });
 
-  it("parses prose and hosts TODO injections", async () => {
+  it("parses prose without injecting annotation or link grammars", async () => {
     const editor = await lumine.workspace.open(path.join(__dirname, "fixtures", "sample.txt"));
     const languageMode = editor.getBuffer().getLanguageMode();
     await languageMode.ready;
-    await languageMode.atTransactionEnd();
+    await editor.whenGrammarSettled();
 
     expect(editor.getGrammar().scopeName).toBe("text.plain");
     expect(
       editor.getSyntaxNodeAtBufferPosition([0, 0], (node) => node.type === "document").hasError,
     ).toBe(false);
-    await conditionPromise(() =>
-      editor
-        .scopeDescriptorForBufferPosition([4, 0])
-        .getScopesArray()
-        .includes("storage.type.class.todo"),
-    );
-    expect(editor.scopeDescriptorForBufferPosition([4, 0]).getScopesArray()).toContain(
-      "storage.type.class.todo",
-    );
+    expect(languageMode.getAllInjectionLayers()).toEqual([]);
+    expect(editor.scopeDescriptorForBufferPosition([4, 0]).getScopesArray()).toEqual([
+      "text.plain",
+      "meta.paragraph.text",
+    ]);
   });
 });

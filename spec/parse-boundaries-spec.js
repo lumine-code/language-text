@@ -48,7 +48,7 @@ describe("Plain Text parse boundaries in the editor", () => {
     return hints;
   }
 
-  it("keeps the first Enter local in a 1 MiB paragraph and retains TODO scopes", async () => {
+  it("keeps the first Enter local in a 1 MiB paragraph without injecting TODO", async () => {
     const rows = Math.ceil(1048576 / 5);
     const body = `${"line\n".repeat(rows)}TODO retained\n`;
     editor = await lumine.workspace.open();
@@ -57,7 +57,8 @@ describe("Plain Text parse boundaries in the editor", () => {
     await editor.whenGrammarSettled();
     const layer = editor.languageMode.rootLanguageLayer;
     expect(layer.queries.parseBoundariesQuery).toBeDefined();
-    expect(scopesAt([rows, 0])).toContain("storage.type.class.todo");
+    expect(editor.languageMode.getAllInjectionLayers()).toEqual([]);
+    expect(scopesAt([rows, 0])).toEqual(["text.plain", "meta.paragraph.text"]);
 
     const hints = await editWithCounters(layer, [
       [0, 2],
@@ -75,12 +76,13 @@ describe("Plain Text parse boundaries in the editor", () => {
       "ne",
     );
     expect(scopesAt([0, 0])).toContain("meta.paragraph.text");
-    expect(scopesAt([rows + 1, 0])).toContain("storage.type.class.todo");
+    expect(editor.languageMode.getAllInjectionLayers()).toEqual([]);
+    expect(scopesAt([rows + 1, 0])).toEqual(["text.plain", "meta.paragraph.text"]);
   }, 60000);
 
   it("loads boundaries in an injected plain body without splitting semantic ownership", async () => {
     const rows = Math.ceil(1048576 / 5);
-    const body = "line\n".repeat(rows);
+    const body = `${"line\n".repeat(rows)}TODO retained\n`;
     const prefix = "const value = `";
     const host = lumine.grammars.grammarForScopeName("source.js");
     const registration = lumine.grammars.addInjectionPoint("source.js", {
@@ -105,6 +107,10 @@ describe("Plain Text parse boundaries in the editor", () => {
       expect(layer.requestedQueryTypes.has("parseBoundariesQuery")).toBe(true);
       expect(layer.getCurrentRanges().length).toBe(1);
       expect(editor.getTextInBufferRange(layer.getCurrentRanges()[0])).toBe(body);
+      expect(mode.getAllInjectionLayers().map((item) => item.grammar.scopeName)).toEqual([
+        "text.plain",
+      ]);
+      expect(scopesAt([rows, 0])).not.toContain("storage.type.class.todo");
 
       const hints = await editWithCounters(layer, [
         [0, prefix.length + 2],
@@ -119,7 +125,12 @@ describe("Plain Text parse boundaries in the editor", () => {
       expect(layer.tree.rootNode.descendantsOfType("paragraph").length).toBe(1);
       expect(scopesAt([0, 0])).not.toContain("meta.paragraph.text");
       expect(scopesAt([1, 0])).toContain("meta.paragraph.text");
-      expect(scopesAt([rows + 1, 0])).not.toContain("meta.paragraph.text");
+      expect(scopesAt([rows + 1, 0])).toContain("meta.paragraph.text");
+      expect(scopesAt([rows + 1, 0])).not.toContain("storage.type.class.todo");
+      expect(scopesAt([rows + 2, 0])).not.toContain("meta.paragraph.text");
+      expect(mode.getAllInjectionLayers().map((item) => item.grammar.scopeName)).toEqual([
+        "text.plain",
+      ]);
     } finally {
       registration.dispose();
     }

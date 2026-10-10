@@ -12,7 +12,6 @@
     "parseBoundariesQuery": "text-parse-boundaries.scm",
     "parseBoundariesMaxStartDepth": 1,
     "parseBoundariesInjections": true,
-    "highlightsQuery": "text-highlights.scm",
-    "injectionsQuery": "text-injections.scm"
+    "highlightsQuery": "text-highlights.scm"
   }
 }

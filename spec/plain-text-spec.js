@@ -107,22 +107,14 @@ describe("Plain Text grammar", () => {
     }
   });
 
-  it("hosts TODO injections only at word boundaries", async () => {
+  it("keeps TODO markers and similar words as ordinary prose", async () => {
     const editor = await parse("TODO fix this\nxTODO\nTODOs\nsubTODO\n");
-    await conditionPromise(() =>
-      editor
-        .scopeDescriptorForBufferPosition([0, 0])
-        .getScopesArray()
-        .includes("storage.type.class.todo"),
-    );
-
-    expect(editor.scopeDescriptorForBufferPosition([0, 0]).getScopesArray()).toContain(
-      "storage.type.class.todo",
-    );
-    for (const row of [1, 2, 3]) {
-      expect(editor.scopeDescriptorForBufferPosition([row, 0]).getScopesArray()).not.toContain(
-        "storage.type.class.todo",
-      );
+    expect(editor.languageMode.getAllInjectionLayers()).toEqual([]);
+    for (const row of [0, 1, 2, 3]) {
+      expect(editor.scopeDescriptorForBufferPosition([row, 0]).getScopesArray()).toEqual([
+        "text.plain",
+        "meta.paragraph.text",
+      ]);
     }
   });
 });
