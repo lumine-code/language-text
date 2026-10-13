@@ -1,0 +1,16 @@
+{
+  "title": "language-text",
+  "description": "Plain Text syntax highlighting in the editor.",
+  "recordedOn": "2026-10-13",
+  "sourceRevision": "8c6d601aae311fa9a3220305bf20ab9efbdbc112",
+  "mode": "normal",
+  "fontSettings": "default",
+  "images": [
+    {
+      "file": "demo.png",
+      "label": "Plain Text syntax highlighting at the default editor font size.",
+      "width": 1100,
+      "height": 360
+    }
+  ]
+}

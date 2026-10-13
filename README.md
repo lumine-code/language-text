@@ -11,6 +11,8 @@ Fork of [pulsar-edit/pulsar](https://github.com/pulsar-edit/pulsar) (`packages/l
 - **Syntax highlighting**: supplies paragraph scopes without injecting other languages.
 - **Snippets**: shortcuts for common plain text constructs.
 
+![Plain Text syntax highlighting at the default editor font size.](.github/demo.png)
+
 ## Installation
 
 To install `language-text` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/language-text`.
