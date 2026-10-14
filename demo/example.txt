@@ -1,0 +1,5 @@
+Plain text remains intentionally structure-free.
+
+Visit https://example.com for documentation.
+
+TODO: keep the parser lightweight for large files.
