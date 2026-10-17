@@ -23,7 +23,8 @@
   "files": [
     "grammars",
     "snippets",
-    "spec"
+    "spec",
+    "THIRD_PARTY_NOTICES"
   ],
   "bugs": {
     "url": "https://github.com/lumine-code/language-text/issues"
