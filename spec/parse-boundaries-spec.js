@@ -20,12 +20,12 @@ describe("Plain Text parse boundaries in the editor", () => {
     let steps = 0,
       consumed = 0;
     parser.setLogger((message) => {
-      if (message.startsWith("process ")) steps++;
-      if (message.startsWith("consume ")) consumed++;
+      if (message === "process") steps++;
+      if (message === "consume") consumed++;
     });
     const calls = [];
-    const original = mode.parseAsync.bind(mode);
-    const spy = spyOn(mode, "parseAsync").and.callFake((language, oldTree, ranges, options) => {
+    const original = mode.parse.bind(mode);
+    const spy = spyOn(mode, "parse").and.callFake((language, oldTree, ranges, options) => {
       if (language === layer.language && oldTree) calls.push(ranges);
       return original(language, oldTree, ranges, options);
     });
@@ -36,6 +36,8 @@ describe("Plain Text parse boundaries in the editor", () => {
       parser.setLogger(null);
       spy.and.callThrough();
     }
+    expect(steps).toBeGreaterThan(0);
+    expect(consumed).toBeGreaterThan(0);
     expect(steps).toBeLessThan(4096);
     expect(consumed).toBeLessThan(8192);
     expect(calls.length).toBeGreaterThan(0);
@@ -65,7 +67,7 @@ describe("Plain Text parse boundaries in the editor", () => {
       [0, 2],
     ]);
     expect(hints[0].startIndex).toBe(0);
-    expect(hints.at(-1).endIndex).toBe(2147483647);
+    expect(hints.at(-1).endIndex).toBe(editor.getBuffer().getLength());
     const root = editor.getSyntaxNodeAtBufferPosition([0, 0], (node) => !node.parent);
     expect(root.endIndex).toBe(body.length + 1);
     expect(root.descendantsOfType("paragraph").length).toBe(1);
