@@ -20,21 +20,23 @@ describe("Plain Text parse boundaries in the editor", () => {
     let steps = 0,
       consumed = 0;
     parser.setLogger((message) => {
-      if (message === "process") steps++;
-      if (message === "consume") consumed++;
+      if (message.startsWith("process")) steps++;
+      if (message.startsWith("consume")) consumed++;
     });
     const calls = [];
-    const original = mode.parse.bind(mode);
-    const spy = spyOn(mode, "parse").and.callFake((language, oldTree, ranges, options) => {
-      if (language === layer.language && oldTree) calls.push(ranges);
-      return original(language, oldTree, ranges, options);
+    const spies = ["parse", "parseAsync"].map((method) => {
+      const original = mode[method].bind(mode);
+      return spyOn(mode, method).and.callFake((language, oldTree, ranges, options) => {
+        if (language === layer.language && oldTree) calls.push(ranges);
+        return original(language, oldTree, ranges, options);
+      });
     });
     try {
       editor.setTextInBufferRange(range, "\n");
       await editor.whenGrammarSettled();
     } finally {
       parser.setLogger(null);
-      spy.and.callThrough();
+      for (const spy of spies) spy.and.callThrough();
     }
     expect(steps).toBeGreaterThan(0);
     expect(consumed).toBeGreaterThan(0);
