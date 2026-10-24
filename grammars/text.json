@@ -7,7 +7,7 @@
   "fileTypes": ["txt"],
   "treeSitter": {
     "parserSource": "github:lumine-code/tree-sitter-plain-text#d09951812cbdbae67b5b19dc5864f7f29b5b0625",
-    "wasmBuildTool": "tree-sitter-cli#v0.27.0",
+    "wasmBuildTool": "tree-sitter-cli#v0.27.1",
     "grammar": "plain-text.wasm",
     "parseBoundariesQuery": "text-parse-boundaries.scm",
     "parseBoundariesMaxStartDepth": 1,
