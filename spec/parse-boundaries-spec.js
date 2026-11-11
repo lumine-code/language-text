@@ -16,6 +16,9 @@ describe("Plain Text parse boundaries in the editor", () => {
 
   async function editWithCounters(layer, range) {
     const mode = editor.getBuffer().getLanguageMode();
+    const queryBudget = mode.queryBudget;
+    // Measure parser work independently of the host's query deadline.
+    mode.queryBudget = { ...queryBudget, now: () => 0 };
     const parser = mode.getOrCreateParserForLanguage(layer.language);
     let steps = 0,
       consumed = 0;
@@ -35,6 +38,7 @@ describe("Plain Text parse boundaries in the editor", () => {
       editor.setTextInBufferRange(range, "\n");
       await editor.whenGrammarSettled();
     } finally {
+      mode.queryBudget = queryBudget;
       parser.setLogger(null);
       for (const spy of spies) spy.and.callThrough();
     }
@@ -44,6 +48,8 @@ describe("Plain Text parse boundaries in the editor", () => {
     expect(consumed).toBeLessThan(8192);
     expect(calls.length).toBeGreaterThan(0);
     const hints = calls.at(-1);
+    expect(layer.parseBoundaryLimitedReason).toBeNull();
+    expect(Array.isArray(hints)).toBe(true);
     expect(hints.length).toBeGreaterThan(1);
     for (let index = 1; index < hints.length; index++) {
       expect(hints[index - 1].endIndex).toBe(hints[index].startIndex);
@@ -83,6 +89,45 @@ describe("Plain Text parse boundaries in the editor", () => {
     expect(editor.languageMode.getAllInjectionLayers()).toEqual([]);
     expect(scopesAt([rows + 1, 0])).toEqual(["text.plain", "meta.paragraph.text"]);
   }, 60000);
+
+  it("preserves edited plain text when the optional boundary query times out", async () => {
+    const body = `${"line\n".repeat(50)}TODO retained\n`;
+    editor = await lumine.workspace.open();
+    editor.setGrammar(lumine.grammars.grammarForScopeName("text.plain"));
+    editor.setText(body);
+    await editor.whenGrammarSettled();
+    const mode = editor.getBuffer().getLanguageMode();
+    const layer = mode.rootLanguageLayer;
+    const capture = layer.getParseBoundaryCaptures.bind(layer);
+    const boundaryQuery = spyOn(layer, "getParseBoundaryCaptures").and.callFake((tree) => {
+      const queryBudget = mode.queryBudget;
+      let elapsed = 0;
+      mode.queryBudget = { ...queryBudget, now: () => (elapsed += 25) };
+      try {
+        return capture(tree);
+      } finally {
+        mode.queryBudget = queryBudget;
+      }
+    });
+
+    editor.setTextInBufferRange(
+      [
+        [0, 2],
+        [0, 2],
+      ],
+      "\n",
+    );
+    await editor.whenGrammarSettled();
+
+    expect(boundaryQuery).toHaveBeenCalled();
+    expect(layer.parseBoundaryLimitedReason).toBe("timeout");
+    expect(editor.getText()).toBe(`li\nne${body.slice(4)}`);
+    expect(layer.tree.rootNode.hasError).toBe(false);
+    expect(layer.tree.rootNode.endIndex).toBe(body.length + 1);
+    expect(layer.tree.rootNode.descendantsOfType("paragraph").length).toBe(1);
+    expect(mode.getAllInjectionLayers()).toEqual([]);
+    expect(scopesAt([51, 0])).toEqual(["text.plain", "meta.paragraph.text"]);
+  });
 
   it("loads boundaries in an injected plain body without splitting semantic ownership", async () => {
     const rows = Math.ceil(1048576 / 5);
